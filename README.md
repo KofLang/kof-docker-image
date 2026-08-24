@@ -33,6 +33,7 @@ The workflow runs on:
 - Push to `main` branch
 - New GitHub releases from KofLang/Kof4j
 - Manual trigger
+- **Weekly check** (every Monday at 8am UTC) - automatically detects new Kof releases
 
 ## Environment Variables
 
