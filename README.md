@@ -12,8 +12,8 @@ Docker image for [Kof4j](https://github.com/KofLang/Kof4j) - a modern JVM-based 
 ## Quick Start
 
 ```bash
-docker pull koflang/kof:latest
-docker run -it koflang/kof
+docker pull ghcr.io/koflang/kof:latest
+docker run -it ghcr.io/koflang/kof
 ```
 
 ## Building Locally
@@ -27,7 +27,7 @@ docker build -t kof:local .
 This repository uses GitHub Actions to automatically:
 1. Build the latest Kof from source
 2. Create a Docker image
-3. Push to Docker Hub
+3. Push to GitHub Container Registry (ghcr.io)
 
 The workflow runs on:
 - Push to `main` branch
