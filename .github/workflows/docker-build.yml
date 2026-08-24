@@ -81,6 +81,10 @@ jobs:
             type=semver,pattern={{version}}
             type=ref,event=branch
 
+      - name: Set up Docker Buildx
+        if: steps.check-release.outputs.should_build != 'false' || github.event_name != 'schedule'
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
         if: steps.check-release.outputs.should_build != 'false' || github.event_name != 'schedule'
         uses: docker/build-push-action@v5
