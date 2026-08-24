@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-  release:
-    types: [published]
   workflow_dispatch:
   schedule:
     - cron: '0 8 * * 1'  # Toda segunda-feira às 8h UTC
@@ -18,7 +16,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -62,6 +60,18 @@ jobs:
           default_author: github_actions
           push: true
 
+      - name: Set release tag
+        id: release-tag
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "tag=${{ steps.check-release.outputs.LATEST_RELEASE }}" >> $GITHUB_OUTPUT
+            echo "name=Kof ${{ steps.check-release.outputs.LATEST_RELEASE }}" >> $GITHUB_OUTPUT
+          else
+            TAG=$(date +'%Y%m%d-%H%M%S')
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+            echo "name=Build $TAG" >> $GITHUB_OUTPUT
+          fi
+
       - name: Log in to GitHub Container Registry
         if: steps.check-release.outputs.should_build != 'false' || github.event_name != 'schedule'
         uses: docker/login-action@v3
@@ -99,15 +109,15 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Create GitHub Release
-        if: steps.check-release.outputs.should_build == 'true'
+        if: steps.check-release.outputs.should_build != 'false' || github.event_name != 'schedule'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.check-release.outputs.LATEST_RELEASE }}
-          name: "Kof ${{ steps.check-release.outputs.LATEST_RELEASE }}"
+          tag_name: ${{ steps.release-tag.outputs.tag }}
+          name: ${{ steps.release-tag.outputs.name }}
           body: |
             ## Imagem Docker
 
             ```bash
-            docker pull ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.check-release.outputs.LATEST_RELEASE }}
+            docker pull ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.release-tag.outputs.tag }}
             ```
           make_latest: true
