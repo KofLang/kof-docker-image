@@ -1,0 +1,15 @@
+# Docker
+*.tar
+*.tar.gz
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
