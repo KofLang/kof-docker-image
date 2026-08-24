@@ -46,6 +46,7 @@ jobs:
           if [ "$LATEST_RELEASE" != "$CURRENT_RELEASE" ]; then
             echo "New release detected!"
             echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_OUTPUT
             echo "$LATEST_RELEASE" > .last-release
           else
             echo "No new release"
@@ -78,6 +79,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value={{date 'YYYYMMDD-HHmmss'}}
+            type=raw,value=${{ steps.check-release.outputs.LATEST_RELEASE }},enable=${{ steps.check-release.outputs.should_build == 'true' }}
             type=semver,pattern={{version}}
             type=ref,event=branch
 
@@ -95,3 +97,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create GitHub Release
+        if: steps.check-release.outputs.should_build == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.check-release.outputs.LATEST_RELEASE }}
+          name: "Kof ${{ steps.check-release.outputs.LATEST_RELEASE }}"
+          body: |
+            ## Imagem Docker
+
+            ```bash
+            docker pull ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.check-release.outputs.LATEST_RELEASE }}
+            ```
+          make_latest: true
