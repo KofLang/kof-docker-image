@@ -7,7 +7,8 @@
 ### Uma imagem Docker. Sem complicação. Sem frescura.
 
 **Build automático. Atualização semanal. Sem precisar criar conta em lugar nenhum.**
-
+**Última atualização:** 27 de agosto de 2026
+**Versão:** 0.1.2-beta
 ---
 
 > Algumas pessoas querem rodar Kof e acabam passando 2 horas
