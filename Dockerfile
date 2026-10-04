@@ -1,7 +1,7 @@
 FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     git \
     build-essential \
-    openjdk-21-jdk \
+    openjdk-25-jdk \
     maven \
     python3 \
     python3-pip \
@@ -23,17 +23,18 @@ RUN git clone https://github.com/KofLang/Kof4j.git kof
 WORKDIR /opt/kof
 RUN chmod +x gradlew 2>/dev/null || true
 RUN ./gradlew build -x test 2>/dev/null || mvn clean package -DskipTests 2>/dev/null || echo "Build completed"
+RUN cp kof-cli/target/kof-cli-$(cat VERSION).jar lib/kof.jar
 
 # Runtime image
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
 ENV PATH="/opt/kof/bin:${PATH}"
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    openjdk-21-jre-headless \
+    openjdk-25-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts
